@@ -1,0 +1,18 @@
+locations:
+  - name: Luanda
+    country: Angola
+    latitude: -8.8390
+    longitude: 13.2894
+    timezone: Africa/Luanda
+
+  - name: Lisbon
+    country: Portugal
+    latitude: 38.7169
+    longitude: -9.1396
+    timezone: Europe/Lisbon
+
+  - name: Beijing
+    country: China
+    latitude: 39.9042
+    longitude: 116.4074
+    timezone: Asia/Shanghai

@@ -7,7 +7,11 @@ name = "open-meteo-air-quality-pipeline"
 version = "0.1.0"
 description = "Data engineering pipeline for ingesting and processing air quality data from the open-Meteo API."
 requires-python = ">=3.12"
-depedencies = []
+dependencies = [
+    "PyYAML>=6.0,<7.0",
+    "pytest>=9.1.1",
+    "httpx>=0.27,<1.0",
+]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

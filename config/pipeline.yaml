@@ -1,0 +1,20 @@
+pipeline:
+  name: air-quality-ingestion
+  version: 1
+
+source:
+  name: open-meteo-air-quality
+  base_url: ${OPEN_METEO_BASE_URL}
+
+period:
+  start_date: "2026-01-01"
+  end_date: "2026-06-30"
+
+variables:
+  - pm10
+  - pm2_5
+  - carbon_monoxide
+  - nitrogen_dioxide
+  - ozone
+  - dust
+  - aerosol_optical_depth
