@@ -14,6 +14,8 @@ RETRYABLE_STATUS_CODES = {
     503,
     504,
 }
+
+
 class OpenMeteoClient:
     def __init__(
         self,
@@ -21,13 +23,20 @@ class OpenMeteoClient:
         timeout: float = 30.0,
         max_retries: int = 3,
         http_client: httpx.Client | None = None,
-        sleep_func: Callable[[float], None] = time.sleep,
+        sleep_func: Callable[[float], None] | None = None,
     ) -> None:
         self.base_url = base_url
         self.timeout = timeout
         self.max_retries = max_retries
         self.http_client = http_client
-        self.sleep_func = sleep_func
+        self.sleep_func = sleep_func or time.sleep
+
+    def _get_retry_delay(self, attempts: int) -> float:
+        return 2 ** (attempts - 1)
+
+    def _sleep_before_retry(self, attempts: int) -> None:
+        delay = self._get_retry_delay(attempts)
+        self.sleep_func(delay)
 
     def _get(
         self,
@@ -38,24 +47,34 @@ class OpenMeteoClient:
         while True:
             attempts += 1
 
-            if self.http_client is not None:
-                response = self.http_client.get(
-                    self.base_url,
-                    params=params,
-                )
-            else:
-                with httpx.Client(timeout=self.timeout) as client:
-                    response = client.get(
+            try:
+                if self.http_client is not None:
+                    response = self.http_client.get(
                         self.base_url,
                         params=params,
                     )
+                else:
+                    with httpx.Client(timeout=self.timeout) as client:
+                        response = client.get(
+                            self.base_url,
+                            params=params,
+                        )
+
+            except (httpx.TimeoutException, httpx.ConnectError):
+                if attempts > self.max_retries:
+                    raise
+
+                self._sleep_before_retry(attempts)
+                continue
 
             if response.status_code not in RETRYABLE_STATUS_CODES:
                 return response
 
             if attempts > self.max_retries:
                 return response
-            
+
+            self._sleep_before_retry(attempts)
+
     def fetch_air_quality(
         self,
         location: LocationConfig,
@@ -72,18 +91,7 @@ class OpenMeteoClient:
             "timezone": location.timezone,
         }
 
-        if self.http_client is not None:
-            response = self._get(params)
-            response.raise_for_status()
-
-            return response.json()
-
-        with httpx.Client(timeout=self.timeout) as client:
-            response = client.get(
-                self.base_url,
-                params=params,
-            )
-            response.raise_for_status()
+        response = self._get(params)
+        response.raise_for_status()
 
         return response.json()
-      

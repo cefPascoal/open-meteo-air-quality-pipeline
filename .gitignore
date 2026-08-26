@@ -27,4 +27,6 @@ logs/*
 
 # OS
 .DS_Store
-Thumbs.db*.egg-info/
+Thumbs.db*
+
+*.egg-info/
