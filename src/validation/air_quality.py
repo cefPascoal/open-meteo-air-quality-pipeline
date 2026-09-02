@@ -27,7 +27,14 @@ class AirQualityValidator:
                     "valid": False,
                     "reason": "Invalid longitude",
             }
+        pm10 = record.get("pm10")
 
+        if pm10 is None or pm10 < 0:
+            return {
+                "valid": False,
+                "reason": "Invalid pm10",
+            }
+        
         return {
             "valid": True,
             "reason": None,

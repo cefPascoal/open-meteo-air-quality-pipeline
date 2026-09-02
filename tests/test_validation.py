@@ -219,6 +219,7 @@ def test_validate_accepts_maximum_longitude():
         "timestamp": "2026-08-01T00:00",
         "latitude": 0.0,
         "longitude": 180.0,
+        "pm10": 0.0,
     }
 
     result = validator.validate(record)
@@ -235,6 +236,7 @@ def test_validate_accepts_minimum_longitude():
         "timestamp": "2026-08-01T00:00",
         "latitude": 0.0,
         "longitude": -180.0,
+        "pm10": 0.0,
     }
 
     result = validator.validate(record)
@@ -273,4 +275,88 @@ def test_validate_rejects_missing_longitude():
     assert result == {
         "valid": False,
         "reason": "Invalid longitude",
+    }
+
+def test_validate_rejects_negative_pm10():
+    validator = AirQualityValidator()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": -1.0,
+    }
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "reason": "Invalid pm10",
+    }
+
+def test_validate_accepts_zero_pm10():
+    validator = AirQualityValidator()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
+    }
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": True,
+        "reason": None,
+    }
+
+def test_validate_accepts_positive_pm10():
+    validator = AirQualityValidator()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 12.5,
+    }
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": True,
+        "reason": None,
+    }
+
+def test_validate_rejects_none_pm10():
+    validator = AirQualityValidator()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": None,
+    }
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "reason": "Invalid pm10",
+    }
+
+def test_validate_rejects_missing_pm10():
+    validator = AirQualityValidator()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+    }
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "reason": "Invalid pm10",
     }
