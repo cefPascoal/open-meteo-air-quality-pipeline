@@ -80,3 +80,102 @@ def test_validate_rejects_missing_timestamp():
         "valid": False,
         "reason": "Invalid timestamp",
     }
+
+def test_validate_rejects_invalid_latitude():
+    record = {
+        "location": "Beijing",
+        "country": "China",
+        "latitude": 91.0,
+        "longitude": 116.4074,
+        "timezone": "Asia/Shanghai",
+        "timestamp": "2026-01-01T00:00",
+        "pm10": 12.5,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "reason": "Invalid latitude",
+    }
+
+def test_validate_rejects_latitude_below_minimum():
+    record = {
+        "location": "Beijing",
+        "country": "China",
+        "latitude": -91.0,
+        "longitude": 116.4074,
+        "timezone": "Asia/Shanghai",
+        "timestamp": "2026-01-01T00:00",
+        "pm10": 12.5,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "reason": "Invalid latitude",
+    }
+
+def test_validate_accepts_maximum_latitude():
+    record = {
+        "location": "North Pole",
+        "country": "Arctic",
+        "latitude": 90.0,
+        "longitude": 0.0,
+        "timezone": "UTC",
+        "timestamp": "2026-01-01T00:00",
+        "pm10": 12.5,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": True,
+        "reason": None,
+    }
+
+def test_validate_rejects_none_latitude():
+    record = {
+        "location": "Beijing",
+        "country": "China",
+        "latitude": None,
+        "longitude": 116.4074,
+        "timezone": "Asia/Shanghai",
+        "timestamp": "2026-01-01T00:00",
+        "pm10": 12.5,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "reason": "Invalid latitude",
+    }
+
+def test_validate_rejects_missing_latitude():
+    record = {
+        "location": "Beijing",
+        "country": "China",
+        "longitude": 116.4074,
+        "timezone": "Asia/Shanghai",
+        "timestamp": "2026-01-01T00:00",
+        "pm10": 12.5,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "reason": "Invalid latitude",
+    }

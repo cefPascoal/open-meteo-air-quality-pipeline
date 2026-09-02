@@ -12,6 +12,14 @@ class AirQualityValidator:
                 "reason": "Invalid timestamp",
             }
 
+        latitude = record.get("latitude")
+
+        if latitude is None or not (-90 <= latitude <= 90):
+            return {
+                "valid": False,
+                "reason": "Invalid latitude",
+            }
+
         return {
             "valid": True,
             "reason": None,
