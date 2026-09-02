@@ -179,3 +179,98 @@ def test_validate_rejects_missing_latitude():
         "valid": False,
         "reason": "Invalid latitude",
     }
+
+def test_validate_rejects_invalid_longitude():
+    validator = AirQualityValidator()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 181.0,
+    }
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "reason": "Invalid longitude",
+    }
+
+def test_validate_rejects_longitude_below_minimum():
+    validator = AirQualityValidator()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": -181.0,
+    }
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "reason": "Invalid longitude",
+    }
+
+def test_validate_accepts_maximum_longitude():
+    validator = AirQualityValidator()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 180.0,
+    }
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": True,
+        "reason": None,
+    }
+
+def test_validate_accepts_minimum_longitude():
+    validator = AirQualityValidator()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": -180.0,
+    }
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": True,
+        "reason": None,
+    }
+
+def test_validate_rejects_none_longitude():
+    validator = AirQualityValidator()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": None,
+    }
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "reason": "Invalid longitude",
+    }
+
+def test_validate_rejects_missing_longitude():
+    validator = AirQualityValidator()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+    }
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "reason": "Invalid longitude",
+    }

@@ -20,6 +20,14 @@ class AirQualityValidator:
                 "reason": "Invalid latitude",
             }
 
+        longitude = record.get("longitude")
+
+        if longitude is None or not (-180 <= longitude <= 180):
+            return {
+                    "valid": False,
+                    "reason": "Invalid longitude",
+            }
+
         return {
             "valid": True,
             "reason": None,
