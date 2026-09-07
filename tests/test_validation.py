@@ -1,23 +1,21 @@
 from src.validation.air_quality import AirQualityValidator
 
 
-
-def test_validate_accepts_valid_timestamp():
-    record = {
-        "location": "Beijing",
-        "country": "China",
-        "latitude": 39.9042,
-        "longitude": 116.4074,
-        "timezone": "Asia/Shanghai",
-        "timestamp": "2026-01-01T00:00",
-        "pm10": 12.5,
+def make_valid_record():
+    return {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
         "pm2_5": 0.0,
         "carbon_monoxide": 0.0,
     }
 
+
+def test_validate_accepts_valid_record():
     validator = AirQualityValidator()
 
-    result = validator.validate(record)
+    result = validator.validate(make_valid_record())
 
     assert result == {
         "valid": True,
@@ -25,17 +23,12 @@ def test_validate_accepts_valid_timestamp():
     }
 
 
+# Timestamp
+
+
 def test_validate_rejects_invalid_timestamp():
-    record = {
-        "location": "Beijing",
-        "country": "China",
-        "latitude": 39.9042,
-        "longitude": 116.4074,
-        "timezone": "Asia/Shanghai",
-        "timestamp": "invalid-timestamp",
-        "pm10": 12.5,
-        "pm2_5": 0.0,
-    }
+    record = make_valid_record()
+    record["timestamp"] = "invalid-timestamp"
 
     validator = AirQualityValidator()
 
@@ -48,37 +41,8 @@ def test_validate_rejects_invalid_timestamp():
 
 
 def test_validate_rejects_none_timestamp():
-    record = {
-        "location": "Beijing",
-        "country": "China",
-        "latitude": 39.9042,
-        "longitude": 116.4074,
-        "timezone": "Asia/Shanghai",
-        "timestamp": None,
-        "pm10": 12.5,
-        "pm2_5": 0.0,
-    }
-
-    validator = AirQualityValidator()
-
-    result = validator.validate(record)
-
-    assert result == {
-        "valid": False,
-         "errors": ["Invalid timestamp"],
-    }
-
-
-def test_validate_rejects_missing_timestamp():
-    record = {
-        "location": "Beijing",
-        "country": "China",
-        "latitude": 39.9042,
-        "longitude": 116.4074,
-        "timezone": "Asia/Shanghai",
-        "pm10": 12.5,
-        "pm2_5": 0.0,
-    }
+    record = make_valid_record()
+    record["timestamp"] = None
 
     validator = AirQualityValidator()
 
@@ -90,17 +54,26 @@ def test_validate_rejects_missing_timestamp():
     }
 
 
-def test_validate_rejects_invalid_latitude():
-    record = {
-        "location": "Beijing",
-        "country": "China",
-        "latitude": 91.0,
-        "longitude": 116.4074,
-        "timezone": "Asia/Shanghai",
-        "timestamp": "2026-01-01T00:00",
-        "pm10": 12.5,
-        "pm2_5": 0.0,
+def test_validate_rejects_missing_timestamp():
+    record = make_valid_record()
+    del record["timestamp"]
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "errors": ["Invalid timestamp"],
     }
+
+
+# Latitude
+
+
+def test_validate_rejects_invalid_latitude():
+    record = make_valid_record()
+    record["latitude"] = 91.0
 
     validator = AirQualityValidator()
 
@@ -113,16 +86,8 @@ def test_validate_rejects_invalid_latitude():
 
 
 def test_validate_rejects_latitude_below_minimum():
-    record = {
-        "location": "Beijing",
-        "country": "China",
-        "latitude": -91.0,
-        "longitude": 116.4074,
-        "timezone": "Asia/Shanghai",
-        "timestamp": "2026-01-01T00:00",
-        "pm10": 12.5,
-        "pm2_5": 0.0,
-    }
+    record = make_valid_record()
+    record["latitude"] = -91.0
 
     validator = AirQualityValidator()
 
@@ -135,17 +100,8 @@ def test_validate_rejects_latitude_below_minimum():
 
 
 def test_validate_accepts_maximum_latitude():
-    record = {
-        "location": "North Pole",
-        "country": "Arctic",
-        "latitude": 90.0,
-        "longitude": 0.0,
-        "timezone": "UTC",
-        "timestamp": "2026-01-01T00:00",
-        "pm10": 12.5,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 0.0,
-    }
+    record = make_valid_record()
+    record["latitude"] = 90.0
 
     validator = AirQualityValidator()
 
@@ -158,16 +114,8 @@ def test_validate_accepts_maximum_latitude():
 
 
 def test_validate_rejects_none_latitude():
-    record = {
-        "location": "Beijing",
-        "country": "China",
-        "latitude": None,
-        "longitude": 116.4074,
-        "timezone": "Asia/Shanghai",
-        "timestamp": "2026-01-01T00:00",
-        "pm10": 12.5,
-        "pm2_5": 0.0,
-    }
+    record = make_valid_record()
+    record["latitude"] = None
 
     validator = AirQualityValidator()
 
@@ -180,15 +128,8 @@ def test_validate_rejects_none_latitude():
 
 
 def test_validate_rejects_missing_latitude():
-    record = {
-        "location": "Beijing",
-        "country": "China",
-        "longitude": 116.4074,
-        "timezone": "Asia/Shanghai",
-        "timestamp": "2026-01-01T00:00",
-        "pm10": 12.5,
-        "pm2_5": 0.0,
-    }
+    record = make_valid_record()
+    del record["latitude"]
 
     validator = AirQualityValidator()
 
@@ -200,14 +141,14 @@ def test_validate_rejects_missing_latitude():
     }
 
 
-def test_validate_rejects_invalid_longitude():
-    validator = AirQualityValidator()
+# Longitude
 
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 181.0,
-    }
+
+def test_validate_rejects_invalid_longitude():
+    record = make_valid_record()
+    record["longitude"] = 181.0
+
+    validator = AirQualityValidator()
 
     result = validator.validate(record)
 
@@ -218,13 +159,10 @@ def test_validate_rejects_invalid_longitude():
 
 
 def test_validate_rejects_longitude_below_minimum():
-    validator = AirQualityValidator()
+    record = make_valid_record()
+    record["longitude"] = -181.0
 
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": -181.0,
-    }
+    validator = AirQualityValidator()
 
     result = validator.validate(record)
 
@@ -235,16 +173,10 @@ def test_validate_rejects_longitude_below_minimum():
 
 
 def test_validate_accepts_maximum_longitude():
-    validator = AirQualityValidator()
+    record = make_valid_record()
+    record["longitude"] = 180.0
 
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 180.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 0.0,
-    }
+    validator = AirQualityValidator()
 
     result = validator.validate(record)
 
@@ -255,16 +187,10 @@ def test_validate_accepts_maximum_longitude():
 
 
 def test_validate_accepts_minimum_longitude():
-    validator = AirQualityValidator()
+    record = make_valid_record()
+    record["longitude"] = -180.0
 
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": -180.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 0.0,
-    }
+    validator = AirQualityValidator()
 
     result = validator.validate(record)
 
@@ -275,13 +201,10 @@ def test_validate_accepts_minimum_longitude():
 
 
 def test_validate_rejects_none_longitude():
-    validator = AirQualityValidator()
+    record = make_valid_record()
+    record["longitude"] = None
 
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": None,
-    }
+    validator = AirQualityValidator()
 
     result = validator.validate(record)
 
@@ -292,12 +215,10 @@ def test_validate_rejects_none_longitude():
 
 
 def test_validate_rejects_missing_longitude():
-    validator = AirQualityValidator()
+    record = make_valid_record()
+    del record["longitude"]
 
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-    }
+    validator = AirQualityValidator()
 
     result = validator.validate(record)
 
@@ -307,16 +228,14 @@ def test_validate_rejects_missing_longitude():
     }
 
 
-def test_validate_rejects_negative_pm10():
-    validator = AirQualityValidator()
+# PM10
 
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": -1.0,
-        "pm2_5": 0.0,
-    }
+
+def test_validate_rejects_negative_pm10():
+    record = make_valid_record()
+    record["pm10"] = -1.0
+
+    validator = AirQualityValidator()
 
     result = validator.validate(record)
 
@@ -327,16 +246,10 @@ def test_validate_rejects_negative_pm10():
 
 
 def test_validate_accepts_zero_pm10():
-    validator = AirQualityValidator()
+    record = make_valid_record()
+    record["pm10"] = 0.0
 
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 0.0,
-    }
+    validator = AirQualityValidator()
 
     result = validator.validate(record)
 
@@ -347,16 +260,10 @@ def test_validate_accepts_zero_pm10():
 
 
 def test_validate_accepts_positive_pm10():
-    validator = AirQualityValidator()
+    record = make_valid_record()
+    record["pm10"] = 12.5
 
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 12.5,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 0.0,
-    }
+    validator = AirQualityValidator()
 
     result = validator.validate(record)
 
@@ -367,15 +274,10 @@ def test_validate_accepts_positive_pm10():
 
 
 def test_validate_rejects_none_pm10():
-    validator = AirQualityValidator()
+    record = make_valid_record()
+    record["pm10"] = None
 
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": None,
-        "pm2_5": 0.0,
-    }
+    validator = AirQualityValidator()
 
     result = validator.validate(record)
 
@@ -386,13 +288,10 @@ def test_validate_rejects_none_pm10():
 
 
 def test_validate_rejects_missing_pm10():
-    validator = AirQualityValidator()
+    record = make_valid_record()
+    del record["pm10"]
 
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-    }
+    validator = AirQualityValidator()
 
     result = validator.validate(record)
 
@@ -402,83 +301,99 @@ def test_validate_rejects_missing_pm10():
     }
 
 
+# PM2.5
+
+
 def test_validate_rejects_negative_pm2_5():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": -1.0,
-    }
+    record = make_valid_record()
+    record["pm2_5"] = -1.0
 
     validator = AirQualityValidator()
 
     result = validator.validate(record)
 
-    assert result["valid"] is False
-    assert result["errors"] == ["Invalid pm2_5"]
+    assert result == {
+        "valid": False,
+        "errors": ["Invalid pm2_5"],
+    }
+
+
+def test_validate_accepts_zero_pm2_5():
+    record = make_valid_record()
+    record["pm2_5"] = 0.0
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": True,
+        "errors": [],
+    }
+
+
+def test_validate_accepts_positive_pm2_5():
+    record = make_valid_record()
+    record["pm2_5"] = 12.5
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": True,
+        "errors": [],
+    }
 
 
 def test_validate_rejects_none_pm2_5():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": None,
-    }
+    record = make_valid_record()
+    record["pm2_5"] = None
 
     validator = AirQualityValidator()
 
     result = validator.validate(record)
 
-    assert result["valid"] is False
-    assert result["errors"] == ["Invalid pm2_5"]
+    assert result == {
+        "valid": False,
+        "errors": ["Invalid pm2_5"],
+    }
 
 
 def test_validate_rejects_missing_pm2_5():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-    }
+    record = make_valid_record()
+    del record["pm2_5"]
 
     validator = AirQualityValidator()
 
     result = validator.validate(record)
 
-    assert result["valid"] is False
-    assert result["errors"] == ["Invalid pm2_5"]
+    assert result == {
+        "valid": False,
+        "errors": ["Invalid pm2_5"],
+    }
+
+
+# Carbon monoxide
 
 
 def test_validate_rejects_negative_carbon_monoxide():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": -1.0,
-    }
+    record = make_valid_record()
+    record["carbon_monoxide"] = -1.0
 
     validator = AirQualityValidator()
 
     result = validator.validate(record)
 
-    assert result["valid"] is False
-    assert result["errors"] == ["Invalid carbon_monoxide"]
+    assert result == {
+        "valid": False,
+        "errors": ["Invalid carbon_monoxide"],
+    }
 
 
 def test_validate_accepts_zero_carbon_monoxide():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 0.0,
-    }
+    record = make_valid_record()
+    record["carbon_monoxide"] = 0.0
 
     validator = AirQualityValidator()
 
@@ -491,14 +406,8 @@ def test_validate_accepts_zero_carbon_monoxide():
 
 
 def test_validate_accepts_positive_carbon_monoxide():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 150.0,
-    }
+    record = make_valid_record()
+    record["carbon_monoxide"] = 150.0
 
     validator = AirQualityValidator()
 
@@ -511,86 +420,8 @@ def test_validate_accepts_positive_carbon_monoxide():
 
 
 def test_validate_rejects_none_carbon_monoxide():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": None,
-    }
-
-    validator = AirQualityValidator()
-
-    result = validator.validate(record)
-
-    assert result["valid"] is False
-    assert result["errors"] == ["Invalid carbon_monoxide"]
-
-
-def test_validate_rejects_missing_carbon_monoxide():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-    }
-
-    validator = AirQualityValidator()
-
-    result = validator.validate(record)
-
-    assert result["valid"] is False
-    assert result["errors"] == ["Invalid carbon_monoxide"]
-
-
-def test_validate_returns_errors_as_list():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": -1.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 0.0,
-    }
-
-    validator = AirQualityValidator()
-
-    result = validator.validate(record)
-
-    assert result["valid"] is False
-    assert result["errors"] == ["Invalid pm10"]
-
-def test_validate_returns_errors_for_invalid_pm2_5():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": -1.0,
-        "carbon_monoxide": 0.0,
-    }
-
-    validator = AirQualityValidator()
-
-    result = validator.validate(record)
-
-    assert result == {
-        "valid": False,
-        "errors": ["Invalid pm2_5"],
-    }
-
-
-def test_validate_returns_errors_for_invalid_carbon_monoxide():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": -1.0,
-    }
+    record = make_valid_record()
+    record["carbon_monoxide"] = None
 
     validator = AirQualityValidator()
 
@@ -599,18 +430,12 @@ def test_validate_returns_errors_for_invalid_carbon_monoxide():
     assert result == {
         "valid": False,
         "errors": ["Invalid carbon_monoxide"],
-    }  
-
-
-def test_validate_returns_errors_for_invalid_latitude():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 91.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 0.0,
     }
+
+
+def test_validate_rejects_missing_carbon_monoxide():
+    record = make_valid_record()
+    del record["carbon_monoxide"]
 
     validator = AirQualityValidator()
 
@@ -618,19 +443,34 @@ def test_validate_returns_errors_for_invalid_latitude():
 
     assert result == {
         "valid": False,
-        "errors": ["Invalid latitude"],
+        "errors": ["Invalid carbon_monoxide"],
     }
 
 
-def test_validate_returns_errors_for_invalid_longitude():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 181.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 0.0,
-    }
+# Validation contract
+
+
+def test_validate_returns_errors_as_list():
+    record = make_valid_record()
+    record["pm10"] = -1.0
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result["valid"] is False
+    assert result["errors"] == ["Invalid pm10"]
+
+
+def test_validate_returns_all_validation_errors():
+    record = make_valid_record()
+
+    record["timestamp"] = "invalid-timestamp"
+    record["latitude"] = 100.0
+    record["longitude"] = 200.0
+    record["pm10"] = -1.0
+    record["pm2_5"] = -1.0
+    record["carbon_monoxide"] = -1.0
 
     validator = AirQualityValidator()
 
@@ -638,43 +478,12 @@ def test_validate_returns_errors_for_invalid_longitude():
 
     assert result == {
         "valid": False,
-        "errors": ["Invalid longitude"],
-    }
-
-
-def test_validate_returns_errors_for_invalid_timestamp():
-    record = {
-        "timestamp": "invalid-timestamp",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 0.0,
-    }
-
-    validator = AirQualityValidator()
-    result = validator.validate(record)
-
-    assert result == {
-        "valid": False,
-        "errors": ["Invalid timestamp"],
-    }
-
-
-def test_validate_returns_empty_errors_for_valid_record():
-    record = {
-        "timestamp": "2026-08-01T00:00",
-        "latitude": 0.0,
-        "longitude": 0.0,
-        "pm10": 0.0,
-        "pm2_5": 0.0,
-        "carbon_monoxide": 0.0,
-    }
-
-    validator = AirQualityValidator()
-    result = validator.validate(record)
-
-    assert result == {
-        "valid": True,
-        "errors": [],
+        "errors": [
+            "Invalid timestamp",
+            "Invalid latitude",
+            "Invalid longitude",
+            "Invalid pm10",
+            "Invalid pm2_5",
+            "Invalid carbon_monoxide",
+        ],
     }
