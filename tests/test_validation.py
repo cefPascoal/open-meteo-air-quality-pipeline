@@ -21,7 +21,7 @@ def test_validate_accepts_valid_timestamp():
 
     assert result == {
         "valid": True,
-        "reason": None,
+        "errors": [],
     }
 
 
@@ -43,7 +43,7 @@ def test_validate_rejects_invalid_timestamp():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid timestamp",
+        "errors": ["Invalid timestamp"],
     }
 
 
@@ -65,7 +65,7 @@ def test_validate_rejects_none_timestamp():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid timestamp",
+         "errors": ["Invalid timestamp"],
     }
 
 
@@ -86,7 +86,7 @@ def test_validate_rejects_missing_timestamp():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid timestamp",
+        "errors": ["Invalid timestamp"],
     }
 
 
@@ -108,7 +108,7 @@ def test_validate_rejects_invalid_latitude():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid latitude",
+        "errors": ["Invalid latitude"],
     }
 
 
@@ -130,7 +130,7 @@ def test_validate_rejects_latitude_below_minimum():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid latitude",
+        "errors": ["Invalid latitude"],
     }
 
 
@@ -153,7 +153,7 @@ def test_validate_accepts_maximum_latitude():
 
     assert result == {
         "valid": True,
-        "reason": None,
+        "errors": [],
     }
 
 
@@ -175,7 +175,7 @@ def test_validate_rejects_none_latitude():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid latitude",
+        "errors": ["Invalid latitude"],
     }
 
 
@@ -196,7 +196,7 @@ def test_validate_rejects_missing_latitude():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid latitude",
+        "errors": ["Invalid latitude"],
     }
 
 
@@ -213,7 +213,7 @@ def test_validate_rejects_invalid_longitude():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid longitude",
+        "errors": ["Invalid longitude"],
     }
 
 
@@ -230,7 +230,7 @@ def test_validate_rejects_longitude_below_minimum():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid longitude",
+        "errors": ["Invalid longitude"],
     }
 
 
@@ -250,7 +250,7 @@ def test_validate_accepts_maximum_longitude():
 
     assert result == {
         "valid": True,
-        "reason": None,
+        "errors": [],
     }
 
 
@@ -270,7 +270,7 @@ def test_validate_accepts_minimum_longitude():
 
     assert result == {
         "valid": True,
-        "reason": None,
+        "errors": [],
     }
 
 
@@ -287,7 +287,7 @@ def test_validate_rejects_none_longitude():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid longitude",
+        "errors": ["Invalid longitude"],
     }
 
 
@@ -303,7 +303,7 @@ def test_validate_rejects_missing_longitude():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid longitude",
+        "errors": ["Invalid longitude"],
     }
 
 
@@ -322,7 +322,7 @@ def test_validate_rejects_negative_pm10():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid pm10",
+        "errors": ["Invalid pm10"],
     }
 
 
@@ -342,7 +342,7 @@ def test_validate_accepts_zero_pm10():
 
     assert result == {
         "valid": True,
-        "reason": None,
+        "errors": [],
     }
 
 
@@ -362,7 +362,7 @@ def test_validate_accepts_positive_pm10():
 
     assert result == {
         "valid": True,
-        "reason": None,
+        "errors": [],
     }
 
 
@@ -381,7 +381,7 @@ def test_validate_rejects_none_pm10():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid pm10",
+        "errors": ["Invalid pm10"],
     }
 
 
@@ -398,7 +398,7 @@ def test_validate_rejects_missing_pm10():
 
     assert result == {
         "valid": False,
-        "reason": "Invalid pm10",
+        "errors": ["Invalid pm10"],
     }
 
 
@@ -416,7 +416,7 @@ def test_validate_rejects_negative_pm2_5():
     result = validator.validate(record)
 
     assert result["valid"] is False
-    assert result["reason"] == "Invalid pm2_5"
+    assert result["errors"] == ["Invalid pm2_5"]
 
 
 def test_validate_rejects_none_pm2_5():
@@ -433,7 +433,7 @@ def test_validate_rejects_none_pm2_5():
     result = validator.validate(record)
 
     assert result["valid"] is False
-    assert result["reason"] == "Invalid pm2_5"
+    assert result["errors"] == ["Invalid pm2_5"]
 
 
 def test_validate_rejects_missing_pm2_5():
@@ -449,7 +449,7 @@ def test_validate_rejects_missing_pm2_5():
     result = validator.validate(record)
 
     assert result["valid"] is False
-    assert result["reason"] == "Invalid pm2_5"
+    assert result["errors"] == ["Invalid pm2_5"]
 
 
 def test_validate_rejects_negative_carbon_monoxide():
@@ -467,7 +467,7 @@ def test_validate_rejects_negative_carbon_monoxide():
     result = validator.validate(record)
 
     assert result["valid"] is False
-    assert result["reason"] == "Invalid carbon_monoxide"
+    assert result["errors"] == ["Invalid carbon_monoxide"]
 
 
 def test_validate_accepts_zero_carbon_monoxide():
@@ -486,7 +486,7 @@ def test_validate_accepts_zero_carbon_monoxide():
 
     assert result == {
         "valid": True,
-        "reason": None,
+        "errors": [],
     }
 
 
@@ -506,7 +506,7 @@ def test_validate_accepts_positive_carbon_monoxide():
 
     assert result == {
         "valid": True,
-        "reason": None,
+        "errors": [],
     }
 
 
@@ -525,7 +525,7 @@ def test_validate_rejects_none_carbon_monoxide():
     result = validator.validate(record)
 
     assert result["valid"] is False
-    assert result["reason"] == "Invalid carbon_monoxide"
+    assert result["errors"] == ["Invalid carbon_monoxide"]
 
 
 def test_validate_rejects_missing_carbon_monoxide():
@@ -542,4 +542,139 @@ def test_validate_rejects_missing_carbon_monoxide():
     result = validator.validate(record)
 
     assert result["valid"] is False
-    assert result["reason"] == "Invalid carbon_monoxide"
+    assert result["errors"] == ["Invalid carbon_monoxide"]
+
+
+def test_validate_returns_errors_as_list():
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": -1.0,
+        "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result["valid"] is False
+    assert result["errors"] == ["Invalid pm10"]
+
+def test_validate_returns_errors_for_invalid_pm2_5():
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
+        "pm2_5": -1.0,
+        "carbon_monoxide": 0.0,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "errors": ["Invalid pm2_5"],
+    }
+
+
+def test_validate_returns_errors_for_invalid_carbon_monoxide():
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
+        "pm2_5": 0.0,
+        "carbon_monoxide": -1.0,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "errors": ["Invalid carbon_monoxide"],
+    }  
+
+
+def test_validate_returns_errors_for_invalid_latitude():
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 91.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
+        "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "errors": ["Invalid latitude"],
+    }
+
+
+def test_validate_returns_errors_for_invalid_longitude():
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 181.0,
+        "pm10": 0.0,
+        "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "errors": ["Invalid longitude"],
+    }
+
+
+def test_validate_returns_errors_for_invalid_timestamp():
+    record = {
+        "timestamp": "invalid-timestamp",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
+        "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
+    }
+
+    validator = AirQualityValidator()
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": False,
+        "errors": ["Invalid timestamp"],
+    }
+
+
+def test_validate_returns_empty_errors_for_valid_record():
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
+        "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
+    }
+
+    validator = AirQualityValidator()
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": True,
+        "errors": [],
+    }

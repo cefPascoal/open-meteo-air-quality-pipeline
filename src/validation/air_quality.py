@@ -9,7 +9,7 @@ class AirQualityValidator:
         except (ValueError, TypeError, KeyError):
             return {
                 "valid": False,
-                "reason": "Invalid timestamp",
+                "errors": ["Invalid timestamp"],
             }
 
         latitude = record.get("latitude")
@@ -17,7 +17,7 @@ class AirQualityValidator:
         if latitude is None or not (-90 <= latitude <= 90):
             return {
                 "valid": False,
-                "reason": "Invalid latitude",
+                "errors": ["Invalid latitude"],
             }
 
         longitude = record.get("longitude")
@@ -25,7 +25,7 @@ class AirQualityValidator:
         if longitude is None or not (-180 <= longitude <= 180):
             return {
                 "valid": False,
-                "reason": "Invalid longitude",
+                "errors": ["Invalid longitude"],
             }
 
         pm10 = record.get("pm10")
@@ -33,7 +33,7 @@ class AirQualityValidator:
         if pm10 is None or pm10 < 0:
             return {
                 "valid": False,
-                "reason": "Invalid pm10",
+                "errors": ["Invalid pm10"],
             }
 
         pm2_5 = record.get("pm2_5")
@@ -41,7 +41,7 @@ class AirQualityValidator:
         if pm2_5 is None or pm2_5 < 0:
             return {
                 "valid": False,
-                "reason": "Invalid pm2_5",
+                "errors": ["Invalid pm2_5"],
             }
 
         carbon_monoxide = record.get("carbon_monoxide")
@@ -49,10 +49,10 @@ class AirQualityValidator:
         if carbon_monoxide is None or carbon_monoxide < 0:
             return {
                 "valid": False,
-                "reason": "Invalid carbon_monoxide",
+                "errors": ["Invalid carbon_monoxide"],
             }
 
         return {
             "valid": True,
-            "reason": None,
+            "errors": [],
         }
