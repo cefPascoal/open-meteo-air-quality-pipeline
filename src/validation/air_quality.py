@@ -44,6 +44,14 @@ class AirQualityValidator:
                 "reason": "Invalid pm2_5",
             }
 
+        carbon_monoxide = record.get("carbon_monoxide")
+
+        if carbon_monoxide is None or carbon_monoxide < 0:
+            return {
+                "valid": False,
+                "reason": "Invalid carbon_monoxide",
+            }
+
         return {
             "valid": True,
             "reason": None,

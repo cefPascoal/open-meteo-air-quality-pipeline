@@ -12,6 +12,7 @@ def test_validate_accepts_valid_timestamp():
         "timestamp": "2026-01-01T00:00",
         "pm10": 12.5,
         "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
     }
 
     validator = AirQualityValidator()
@@ -143,6 +144,7 @@ def test_validate_accepts_maximum_latitude():
         "timestamp": "2026-01-01T00:00",
         "pm10": 12.5,
         "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
     }
 
     validator = AirQualityValidator()
@@ -241,6 +243,7 @@ def test_validate_accepts_maximum_longitude():
         "longitude": 180.0,
         "pm10": 0.0,
         "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
     }
 
     result = validator.validate(record)
@@ -260,6 +263,7 @@ def test_validate_accepts_minimum_longitude():
         "longitude": -180.0,
         "pm10": 0.0,
         "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
     }
 
     result = validator.validate(record)
@@ -331,6 +335,7 @@ def test_validate_accepts_zero_pm10():
         "longitude": 0.0,
         "pm10": 0.0,
         "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
     }
 
     result = validator.validate(record)
@@ -350,6 +355,7 @@ def test_validate_accepts_positive_pm10():
         "longitude": 0.0,
         "pm10": 12.5,
         "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
     }
 
     result = validator.validate(record)
@@ -444,3 +450,96 @@ def test_validate_rejects_missing_pm2_5():
 
     assert result["valid"] is False
     assert result["reason"] == "Invalid pm2_5"
+
+
+def test_validate_rejects_negative_carbon_monoxide():
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
+        "pm2_5": 0.0,
+        "carbon_monoxide": -1.0,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result["valid"] is False
+    assert result["reason"] == "Invalid carbon_monoxide"
+
+
+def test_validate_accepts_zero_carbon_monoxide():
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
+        "pm2_5": 0.0,
+        "carbon_monoxide": 0.0,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": True,
+        "reason": None,
+    }
+
+
+def test_validate_accepts_positive_carbon_monoxide():
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
+        "pm2_5": 0.0,
+        "carbon_monoxide": 150.0,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result == {
+        "valid": True,
+        "reason": None,
+    }
+
+
+def test_validate_rejects_none_carbon_monoxide():
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
+        "pm2_5": 0.0,
+        "carbon_monoxide": None,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result["valid"] is False
+    assert result["reason"] == "Invalid carbon_monoxide"
+
+
+def test_validate_rejects_missing_carbon_monoxide():
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 0.0,
+        "longitude": 0.0,
+        "pm10": 0.0,
+        "pm2_5": 0.0,
+    }
+
+    validator = AirQualityValidator()
+
+    result = validator.validate(record)
+
+    assert result["valid"] is False
+    assert result["reason"] == "Invalid carbon_monoxide"
