@@ -95,3 +95,60 @@ def test_pipeline_integrates_ingestion_transformation_and_orchestration(
             "errors": ["Invalid pm10"],
         }
     ]
+
+
+def test_pipeline_persists_quarantine(tmp_path):
+    client = FakeOpenMeteoClient()
+
+    ingestion = AirQualityIngestion(client)
+    transformation = AirQualityTransformation()
+    validator = AirQualityValidator()
+
+    output = AirQualityOutput(
+        tmp_path / "output" / "air_quality.jsonl"
+    )
+
+    quarantine = AirQualityQuarantine()
+
+    orchestrator = AirQualityOrchestrator(
+        validator=validator,
+        output=output,
+        quarantine=quarantine,
+    )
+
+    location = LocationConfig(
+        name="Luanda",
+        country="Angola",
+        latitude=-8.8383,
+        longitude=13.2344,
+        timezone="Africa/Luanda",
+    )
+
+    ingestion_result = ingestion.fetch(
+        location=location,
+        start_date=date(2026, 1, 1),
+        end_date=date(2026, 1, 1),
+        variables=(
+            "pm10",
+            "pm2_5",
+            "carbon_monoxide",
+        ),
+    )
+
+    records = transformation.transform(ingestion_result)
+
+    orchestrator.process(records)
+
+    quarantine_file = (
+        tmp_path / "quarantine" / "air_quality.jsonl"
+    )
+
+    quarantine.save(quarantine_file)
+
+    assert quarantine_file.exists()
+
+    lines = quarantine_file.read_text(
+        encoding="utf-8"
+    ).splitlines()
+
+    assert len(lines) == 1
