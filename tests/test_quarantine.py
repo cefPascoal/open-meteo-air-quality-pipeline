@@ -166,3 +166,29 @@ def test_quarantine_persists_multiple_records_to_jsonl(tmp_path):
         "record": record_2,
         "errors": errors_2,
     }
+
+
+def test_quarantine_creates_parent_directory(tmp_path):
+    quarantine = AirQualityQuarantine()
+
+    record = {
+        "timestamp": "2026-08-01T00:00",
+        "latitude": 999,
+        "longitude": 13.2,
+        "pm10": -5,
+        "pm2_5": 10,
+        "carbon_monoxide": 200,
+    }
+
+    errors = [
+        "Invalid latitude",
+        "Invalid pm10",
+    ]
+
+    quarantine.add(record, errors)
+
+    output_file = tmp_path / "quarantine" / "quarantine.jsonl"
+
+    quarantine.save(output_file)
+
+    assert output_file.exists()

@@ -19,6 +19,8 @@ class AirQualityQuarantine:
         })
 
     def save(self, output_file: Path) -> None:
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+
         with output_file.open("w", encoding="utf-8") as file:
             for record in self.records:
                 file.write(json.dumps(record) + "\n")
